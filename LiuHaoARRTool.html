@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liu-Hao Tool: ARR Calculator (Without Drug Washout)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .positive {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .negative {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ARR Calculator (Without Drug Washout)</h1>
+        <div class="warning">
+            Based on 2024 research: ARR screening can be performed without stopping anti-hypertensive medications.
+            Cutoff value: 0.7 (ng/dL)/(μIU/mL)
+        </div>
+        
+        <div class="form-group">
+            <label for="aldosterone">Aldosterone (ng/dL):</label>
+            <input type="number" id="aldosterone" min="0" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="renin">Direct Renin Concentration (μIU/mL):</label>
+            <input type="number" id="renin" min="0" step="0.1" required>
+        </div>
+
+        <button onclick="calculateARR()">Calculate ARR</button>
+
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+    <div class="container">
+        Citation: Liu X, Hao S, Bian J, Lou Y, Zhang H, Wu H, et al. Performance of Aldosterone-to-renin Ratio Before Washout of Antihypertensive Drugs in Screening of Primary Aldosteronism. J Clin Endocrinol Metab. 2024;109(12):e2302–e2308. doi:10.1210/clinem/dgae094 
+    </div>
+
+    <script>
+        function calculateARR() {
+            const aldosterone = parseFloat(document.getElementById('aldosterone').value);
+            const renin = parseFloat(document.getElementById('renin').value);
+            const resultDiv = document.getElementById('result');
+
+            if (isNaN(aldosterone) || isNaN(renin) || renin === 0) {
+                alert('Please enter valid values for both fields');
+                return;
+            }
+
+            const arr = aldosterone / renin;
+            let message = '';
+            let className = '';
+
+            if (arr > 0.7) {
+                message = `
+                    <h3>ARR Result: ${arr.toFixed(2)} (ng/dL)/(μIU/mL)</h3>
+                    <p><strong>Interpretation:</strong> Positive screening for Primary Aldosteronism</p>
+                    <p><strong>Next Steps:</strong></p>
+                    <ul>
+                        <li>Consider confirmatory testing</li>
+                        <li>Referral to endocrinology may be warranted</li>
+                        <li>Monitor blood pressure and electrolytes</li>
+                    </ul>
+                    <p><strong>Study Performance Metrics:</strong></p>
+                    <ul>
+                        <li>Sensitivity: 96.3%</li>
+                        <li>Specificity: 61.2%</li>
+                        <li>Positive Predictive Value: 0.33</li>
+                    </ul>`;
+                className = 'positive';
+            } else {
+                message = `
+                    <h3>ARR Result: ${arr.toFixed(2)} (ng/dL)/(μIU/mL)</h3>
+                    <p><strong>Interpretation:</strong> Primary Aldosteronism is unlikely</p>
+                    <p><strong>Note:</strong> This test has a high negative predictive value (0.99), making it reliable for ruling out PA.</p>
+                    <p><strong>Recommendations:</strong></p>
+                    <ul>
+                        <li>Continue current management plan</li>
+                        <li>Consider other causes of hypertension if poorly controlled</li>
+                    </ul>`;
+                className = 'negative';
+            }
+
+            resultDiv.innerHTML = message;
+            resultDiv.className = 'result ' + className;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
